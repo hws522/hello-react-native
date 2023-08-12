@@ -112,4 +112,72 @@ export default function App() {
 이유는, View 가 하나 있기 때문에 계산할 비율이 없다. 동일한 스크린의 4 배 5 배가 되기에 변화가 없다.
 
 부모 View 옆에 다른 View 가 또 있다면 달라질 수 있다. 아래 자식 View 처럼.
+
+<br>
+
+## 2.5 Styles
+
+`inline` 으로 `css` 를 계속 작성해도 되지만, 컴포넌트가 커지다 보면 가독성이 떨어진다.
+
+이때 아래처럼 `StyleSheet` 를 분리해서 작업하면 좋다.
+
+```js
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'teal',
+  },
+  city: {
+    flex: 1.2,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  cityName: {
+    fontSize: 68,
+    fontWeight: '500',
+  },
+  weather: {
+    flex: 3,
+  },
+  day: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  temp: {
+    marginTop: 50,
+    fontSize: 178,
+  },
+  description: {
+    marginTop: -30,
+    fontSize: 60,
+  },
+});
+```
+
+<br>
+
+## 2.6 Styles part Two
+
+화면상에 View 가 많아지게 되면 자연스럽게 스크롤이 작동될거라 생각하지만 그렇지 않다.
+
+브라우저가 아니기 때문이다.
+
+RN 은 모든 것이 컴포넌트이기 때문에, 이러한 상황에서도 컴포넌트를 사용해야한다.
+
+`ScrollView` 는 내부에 컴포넌트와 뷰들을 자식으로 담을 수 있는, 화면의 스크롤을 사용할 때 쓰는 컴포넌트다.
+
+스크롤 방향은 `horizontal` 을 통해 가로 또는 세로로 변경할 수 있다.
+
+style 을 적용할 때도 `style` 대신 `contentContainerStyle` 을 사용해야 한다.
+
+`scrollView` 는 화면보다 더 넘어가야하기 때문에 더 커야 한다. 그래서 당연히 `flex` 가 필요없다.
+
+스크롤의 자유도를 떨어뜨려서 자연스럽게 다음장으로 넘어가도록 하기위해, `pagingEnabled` 를 사용한다.
+
+```js
+<ScrollView pagingEnabled horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.weather}>
+  ...
+</ScrollView>
+```
+
 <br>
