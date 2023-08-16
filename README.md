@@ -181,3 +181,54 @@ style 을 적용할 때도 `style` 대신 `contentContainerStyle` 을 사용해�
 ```
 
 <br>
+
+## 2.7 Location
+
+현재 내 위치를 가져오기 위해 `Expo Location` 을 이용한다.
+
+이용하기 위해서는 설치를 해야한다.
+
+가이드를 따라 터미널에서 설치해준다.
+
+```shell
+npx expo install expo-location
+```
+
+그 후 아래의 예제처럼 권한을 얻고, 권한을 얻었을 때 진행되는 로직을 구성하면 된다.
+
+```js
+import * as Location from 'expo-location';
+
+export default function App() {
+  const [location, setLocation] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setErrorMsg('Permission to access location was denied');
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
+    })();
+  }, []);
+
+  let text = 'Waiting..';
+  if (errorMsg) {
+    text = errorMsg;
+  } else if (location) {
+    text = JSON.stringify(location);
+  }
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.paragraph}>{text}</Text>
+    </View>
+  );
+}
+```
+
+<br>
