@@ -83,6 +83,6 @@ const styles = StyleSheet.create({
     fontSize: 60,
   },
   tinyText: {
-    fontSize: 20,
+    fontSize: 30,
   },
 });
