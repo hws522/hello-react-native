@@ -232,3 +232,128 @@ export default function App() {
 ```
 
 <br>
+
+## 2.8 Weather
+
+OpenWeather 사이트에서 무료버전으로 날씨 관련 API 를 이용하여 데이터를 가져올 수 있다.
+
+`https://openweathermap.org/api` 에서 가입하고 API KEY 를 발급받는다.
+
+발급받은 API KEY 를 코드에 그대로 넣는 행위는 하면 안되지만, 여기서는 넘어간다.
+
+(js 에서 제공하는 fetch 를 이용해서 받아올 땐 아래와 같은 방식이다.)
+
+```js
+...
+const getWeather = async () => {
+  const { granted } = await Location.requestForegroundPermissionsAsync();
+  if (!granted) {
+    setOk(false);
+  }
+  const {
+    coords: { latitude, longitude },
+  } = await Location.getCurrentPositionAsync({ accuracy: 5 });
+  const location = await Location.reverseGeocodeAsync({ latitude, longitude }, { useGoogleMaps: false });
+  setCity(location[0].city);
+
+  const response = await fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&exclude=alerts&appid=${API_KEY}&units=metric`);
+  const json = await response.json();
+  setDays(json.daily);
+};
+
+useEffect(() => {
+  getWeather();
+}, []);
+...
+```
+
+`ActivityIndicator` 를 이용해서 간단하게 `Loading` 을 구현할 수 있다.
+
+```js
+...
+return (
+    <View style={styles.container}>
+     ...
+        {days.length === 0 ? (
+          <View style={styles.day}>
+            <ActivityIndicator color='white' style={{ marginTop: 10 }} size='large' />
+          </View>
+        ) : (
+          days.map((day, index) => (
+            <View key={index} style={styles.day}>
+              <Text style={styles.temp}>{parseFloat(day.temp.day).toFixed(1)}</Text>
+              <Text style={styles.description}>{day.weather[0].main}</Text>
+              <Text style={styles.tinyText}>{day.weather[0].description}</Text>
+            </View>
+          ))
+        )}
+    </View>
+  );
+```
+
+<br>
+
+## 2.9 Recap
+
+지금까지의 간단한 작업들에서 `React` 가 아닌 `React Native` 인 것은 `Location` 의 내부 값들과, `<View>`, `<Text>`, `ActivityIndicator` 뿐이다.
+
+그 중 `Location` 의 `reverseGeocodeAsync` 는 위도와 경도를 주소로 변환해주고, `GeocodeAsync` 는 주소를 위도, 경도 숫자로 변환해준다.
+
+여기선 days 의 초깃값이 빈배열이지만, `response.json();` 의 결괏값이 undefined 일 때 조건 처리가 되어있지않아 api 호출이 실패했을 때 에러가 발생할 수 있을 것 같다.
+
+Location 을 사용했을 땐 위치정보를 허용해도 샌프란시스코로 나오는 상태이기때문에, 제대로 사용하려면 다른 걸 쓰거나 좀 더 찾아봐야 할 것 같다.
+
+<br>
+
+## 2.10 Icons
+
+`expo init` 명령어로 어플리케이션을 만들었다면, 이미 아이콘 패키지가 설치되어 있다.
+
+`expo/vector-icons` 를 사용하면 아이콘 라이브러리에 접근할 수 있다.
+
+사용법은 간단하다.
+
+아이콘 컴포넌트와 사용할 아이콘에 대한 `props` 만 지정해주면 끝이다.
+
+아이콘들에 대한 정보는 https://icons.expo.fyi/Index 에서 확인 가능하다.
+
+날씨의 아이콘을 지정하려면, api 에서 제공하는 날씨에 관한 이름 정보가 모두 있어야 매칭시킬 수 있기 때문에 정리가 필요하다.
+
+아래처럼 api 에서 제공하는 날씨의 이름을 아이콘 이름과 맞춰놓으면 날씨에 따라 아이콘이 변경되어 출력되는 것을 확인할 수 있다.
+
+```js
+const icons = {
+  Clouds: 'cloudy',
+  Clear: 'day-sunny',
+  Atmosphere: 'cloudy-gusts',
+  Snow: 'snow',
+  Rain: 'rains',
+  Drizzle: 'rain',
+  Thunderstorm: 'lightning',
+};
+```
+
+```js
+...
+days.map((day, index) => (
+  <View key={index} style={styles.day}>
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        width: '100%',
+        justifyContent: 'space-between',
+      }}
+    >
+      <Text style={styles.temp}>{parseFloat(day.temp.day).toFixed(1)}</Text>
+      <Fontisto name={icons[day.weather[0].main]} size={68} color='white' />
+    </View>
+
+    <Text style={styles.description}>{day.weather[0].main}</Text>
+    <Text style={styles.tinyText}>{day.weather[0].description}</Text>
+  </View>
+))
+...
+```
+
+<br>
