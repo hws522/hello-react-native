@@ -357,3 +357,201 @@ days.map((day, index) => (
 ```
 
 <br>
+
+## 3.0 Introduction
+
+https://dribbble.com/shots/6019952-Do-More-List-View
+
+위 경로의 이미지를 바탕으로 간단히 투두리스트를 만들어본다.
+
+여행과 일 두가지의 탭으로 구성될 예정이다.
+
+<br>
+
+## 3.1 Touchable
+
+RN 에는 CSS 에는 없는 속성인 `PaddingHorizontal`, `PaddingVertical` 등이 있다. 그 중 PaddingHorizontal 속성을 사용해서 좌우의 padding 을 조절해준다.
+
+```js
+
+```
+
+버튼을 클릭함에 따라 다른 색상을 편리하게 주기 위해, 그리고 색상을 모드에 따라 관리하기 쉽도록 `theme.js` 파일을 따로 만들어 관리하는 것도 좋다.
+
+```js
+
+```
+
+버튼에는 세가지의 컴포넌트가 있다.
+
+`TouchableOpacity` 는 `View` 와 비슷한 종류로, `wrapper` 라 할 수 있다. `View` 가 터치에 적절하게 반응하도록 한다.
+
+누르면 래핑된 `View` 의 `opacity` 가 감소하여 흐리게 표시된다.
+
+opacity(투명도) 가 들어가 있는 이유는, 여기에 애니메이션 효과가 있기 때문이다.
+
+```js
+...
+<View style={styles.header}>
+  <TouchableOpacity>
+    <Text style={styles.btnText}>Work</Text>
+  </TouchableOpacity>
+...
+</View>
+...
+```
+
+`TouchableHighlight` 는 `TouchableOpacity` 와 동일하게 `View` 가 터치에 적절하게 반응하도록 한다.
+
+하지만 `TouchableOpacity` 보다 더 많은 속성이 있고 약간 다르다.
+
+누르면 래핑된 `View` 의 background 가 바뀌도록 해준다.
+
+물론 속성이 더 많은 만큼 기본값으로 적용되는게 없어서 onPress 속성값을 정해줘야한다.
+
+```js
+...
+<View style={styles.header}>
+  <TouchableHighlight underlayColor={'red'} activeOpacity={0} onPress={() => console.log('pressed')}>
+          <Text style={styles.btnText}>Travel</Text>
+        </TouchableHighlight>
+...
+</View>
+...
+```
+
+`TouchableWithoutFeedback` 는 화면의 가장 위에서 일어나는 탭 이벤트에 반응하지만, 다른 UI 에 관한 반응을 보여주진 않는다.
+
+다른 View 들과 똑같이 onPress, onPressIn, onPressOut 처럼 모든 이벤트들이 포함되어 있지만 `TouchableOpacity` 처럼 시각적 효과는 없다.
+그래서 작동하지 않는 것 같지만 이벤트들은 동작하고 있다.
+
+그래서 expo 문서에서는 큰 이유가 있지 않는한, 사용하지 않는 것을 권장한다. Press 에 반응하는 모든 요소는 피드백이 있어야 하기 때문이다.
+
+`Pressable` 은 다른 것들보다 더 많은 이벤트들이 있고, 디테일하게 설정할 수 있다.
+
+가령 `delayLongPress` 를 이용하면 터치한 시간이 얼마나 지나야 `onLongPress` 이벤트를 활성화 할 것인지에 대해서도 설정이 가능하고, `disabled` 를 이용하려면 `TouchableOpacity` 에는 해당 옵션이 없기 때문에 `Pressable` 를 이용해야한다.
+
+<br>
+
+## 3.2 TextInput
+
+Work 와 Travel 을 번갈아 선택하는 것을 보여주기 위해 조건 부로 css 를 적용하고, `useState` 와 해당 `useState` 를 set 하는 함수를 이용한다.
+
+이는 `RN` 이라기보다는 그냥 `React` 다.
+
+```js
+export default function App() {
+  const [working, setWorking] = useState(true);
+  const [text, setText] = useState('');
+  const travel = () => setWorking(false);
+  const work = () => setWorking(true);
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={work}>
+          <Text style={{ ...styles.btnText, color: working ? 'white' : theme.grey }}>Work</Text>
+        </TouchableOpacity>
+        ...
+      </View>
+      ...
+    </View>
+  );
+}
+```
+
+`RN` 에서 사용자가 text 를 쓰려면 `TextInput` 을 사용해야 한다.
+
+`textarea` 나 `input` 이 없기 때문에, 유일한 방법이다.
+
+`TextInput` 에는 많은 `props` 들이 있다.
+
+그 중 `onChangeText` 를 이용하면 우리가 입력한 `Text` 를 받을 수 있다.
+
+`returnKeyType` 를 이용하면 키보드의 return button 의 타입과 라벨들을 변경할 수 있다.
+
+`secureTextEntry` 를 이용하면 비밀번호 입력 효과를 만들 수 있다.
+
+`multiline` 은 한 줄 이상 입력 시 에 사용한다.
+
+<br>
+
+## 3.3 To Dos
+
+`onSubmitEditing` 를 이용해서 `TextInput` 의 제출 버튼을 눌렀을 때 이벤트를 처리할 수 있다.
+
+to do list 를 가지고 있는 `useState` 값을 `array` 로 처리할 수도 있지만, 여기서는 `object` 로 처리해본다.
+
+`hashmap` 을 이용한다.
+
+`react` 에서 to do list 를 만들 때와 동일하게 `useState` 를 이용해서 코드를 작성한다.
+
+```js
+...
+const addToDo = () => {
+  if (text === '') {
+    return;
+  }
+  const newToDos = Object.assign({}, toDos, {
+    [Date.now()]: { text, work: working },
+  });
+  setToDos(newToDos);
+  setText('');
+};
+...
+<TextInput
+  onSubmitEditing={addToDo}
+  onChangeText={onChangeText}
+  returnKeyType='done'
+  value={text}
+  placeholder={working ? 'Add a To Do' : 'Where do you want to go?'}
+  style={styles.input}
+/>
+...
+
+```
+
+<br>
+
+## 3.4 Paint To Dos
+
+구성한 로직을 화면상에 나타내기 위해 일단 `scrollView` 를 import 한다.
+
+`scrollView` 가 없으면 내가 만든 todo list 들이 scroll 되지 않기 때문이다.
+
+`scrollView` 내부에 toDos object 목록들을 반복해서 출력하기 위해서 `Object.keys(...)` 를 이용한다.
+
+```js
+...
+<ScrollView>
+  {Object.keys(toDos).map((key) => (
+    <View style={styles.toDo} key={key}>
+      <Text style={styles.toDoText}>{toDos[key].text}</Text>
+    </View>
+  ))}
+</ScrollView>
+...
+```
+
+목록들의 css 를 입맛대로 간단히 수정해준다.
+
+```js
+...
+const styles = StyleSheet.create({
+  ...
+  toDo: {
+    backgroundColor: theme.grey,
+    marginBottom: 10,
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+    borderRadius: 15,
+  },
+  toDoText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '500',
+  },
+});
+```
+
+<br>
