@@ -555,3 +555,112 @@ const styles = StyleSheet.create({
 ```
 
 <br>
+
+## 3.5 Persist
+
+Work, Travel 을 선택함에 따라 to do list 를 구별해서 출력해주기 위해 working 값으로 구분 해준다.
+
+```js
+...
+<ScrollView>
+  {Object.keys(toDos).map((key) =>
+    toDos[key].working === working ? (
+      <View style={styles.toDo} key={key}>
+        <Text style={styles.toDoText}>{toDos[key].text}</Text>
+      </View>
+    ) : null
+  )}
+</ScrollView>
+...
+```
+
+작성한 to do list 를 저장하기 위해 `async-storage` 모듈이 필요하다.
+
+해당 모듈을 아래의 명령어로 설치하고 공식 문서에서 사용법을 확인한다.
+
+```shell
+npx expo install @react-native-async-storage/async-storage
+```
+
+컴포넌트가 마운트 된 뒤에, 스토리지에서 키값에 맞는 데이터들을 가져오기 위해 `useEffect` 를 사용한다.
+
+모듈을 설치하는 것 말고는, `React` 와 동일하다.
+
+```js
+...
+const STORAGE_KEY = "@toDos";
+...
+const saveToDos = async (toSave) => {
+  await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+};
+
+const loadToDos = async () => {
+  const s = await AsyncStorage.getItem(STORAGE_KEY);
+  setToDos(JSON.parse(s));
+};
+
+const addToDo = async () => {
+  if (text === '') {
+    return;
+  }
+  const newToDos = {
+    ...toDos,
+    [Date.now()]: { text, working },
+  };
+  setToDos(newToDos);
+  await saveToDos(newToDos);
+  setText('');
+};
+
+useEffect(() => {
+  loadToDos();
+}, []);
+```
+
+여기선 사용하지 않았지만 `try-catch` 문을 사용하는 것이 좋다. 휴대폰 용량이 문제가 될 수도 있고, 다른 문제에 따라 가져오지 못할 수도 있기 때문이다.
+
+<br>
+
+## 3.6 Delete
+
+작성한 to do list 를 삭제하는 기능을 추가하기 위해, 버튼을 만들고 `TouchableOpacity` 를 넣어준다.
+
+`deleteToDo` 함수를 만든다. 해당 함수는 `key` 값을 받아 해당 `key` 값에 해당하는 데이터를 지우도록 한다. 이때 기존 `toDos` 를 복사하고, 해당 키값을 가진 데이터를 삭제하고 다시 `set` 해준다.
+
+사용자가 삭제를 할 때, 다시 한번 확인하는 과정을 위해 `Alert API` 를 사용한다.
+
+```js
+...
+const deleteToDo = (key) => {
+  Alert.alert('Delete To Do', 'Are you sure?', [
+    { text: 'Cancel' },
+    {
+      text: "I'm Sure",
+      style: 'destructive',
+      onPress: () => {
+        const newToDos = { ...toDos };
+        // 아직 state 에 있지 않기 때문에 mutate 해도 된다.
+        delete newToDos[key];
+        setToDos(newToDos);
+        saveToDos(newToDos);
+      },
+    },
+  ]);
+};
+...
+<ScrollView>
+  {Object.keys(toDos).map((key) =>
+    toDos[key].working === working ? (
+      <View style={styles.toDo} key={key}>
+        <Text style={styles.toDoText}>{toDos[key].text}</Text>
+        <TouchableOpacity onPress={() => deleteToDo(key)}>
+          <Fontisto name='trash' size={18} color={theme.grey} />
+        </TouchableOpacity>
+      </View>
+    ) : null
+  )}
+</ScrollView>
+...
+```
+
+<br>
