@@ -710,4 +710,30 @@ const deleteToDo = (key) => {
   };
 ```
 
+app 을 배포하려면, 앱스토어에 올려야 한다.
+
+앱스토어에 올리려면 돈을 내야하기 때문에, 그렇게 하지는 않고 일단 빌드하는것까지만 한다.
+
+`Expo CLI` 를 이용하면 `build` 를 쉽게 할 수 있다. 심지어 `expo` 를 이용하면 ios app 을 윈도우에서 만들 수 있다. app 을 만드는 일련의 과정들이 expo 서버에서 이루어지기 때문이다.
+
+`npm install -g eas-cli` 명령어를 이용해 `eas-cli` 를 설치한 후,
+
+```shell
+eas build --platform android
+eas build --platform ios
+eas build --platform all
+```
+
+위 명령어를 이용하면, `build` 를 진행할 수 있다.
+
+- 참고링크: https://docs.expo.dev/build/setup/
+
+`React Native` 로 `네이티브 Windows, macOS APP`을 빌드할 수 있다.
+
+- 참고링크: https://microsoft.github.io/react-native-windows/
+
+`ViroReact` 는 `React Native` 를 사용하여 AR/VR 애플리케이션을 빠르게 구축하기 위한 오픈 소스 개발자 플랫폼이다. AR 및 VR 앱은 single code를 기반으로 한다.
+
+- 참고링크: https://viromedia.com/viroreact
+
 <br>
