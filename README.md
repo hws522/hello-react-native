@@ -664,3 +664,50 @@ const deleteToDo = (key) => {
 ```
 
 <br>
+
+## 4 Publishing
+
+`app.json` 안에는 여러 설정값들이 있어서 찾아보고 값을 수정하면 된다.
+
+여기에는 아이콘도 있고, os 별 배경색도 수정할 수 있다.
+
+https://docs.expo.dev/versions/latest/config/app/ 에서 사용 가능한 모든 설정을 볼 수 있다.
+
+asset 폴더에는 `splash screen` 으로 지정된 이미지도 있어서 수정하게 되면 내가 원하는 걸로 바꿀 수 있다.
+
+`react-native-web` 도 있다.
+
+기존 코드에서의 `Alert` 은 web 에서는 적용되지 않기 때문에 조건 처리를 해줘야 한다.
+
+`Platform API` 를 이용하면 현재의 플랫폼이 무엇인지 알 수 있다. 이를 이용해 조건처리를 한다.
+
+```js
+...
+const deleteToDo = (key) => {
+    if (Platform.OS === 'web') {
+      const ok = confirm('Do you want to delete this To Do?');
+      if (ok) {
+        const newToDos = { ...toDos };
+        delete newToDos[key];
+        setToDos(newToDos);
+        saveToDos(newToDos);
+      }
+    } else {
+      Alert.alert('Delete To Do', 'Are you sure?', [
+        { text: 'Cancel' },
+        {
+          text: "I'm Sure",
+          style: 'destructive',
+          onPress: () => {
+            const newToDos = { ...toDos };
+            delete newToDos[key];
+            setToDos(newToDos);
+            saveToDos(newToDos);
+          },
+        },
+      ]);
+    }
+  };
+```
+
+<br>
