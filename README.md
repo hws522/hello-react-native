@@ -736,4 +736,24 @@ eas build --platform all
 
 - 참고링크: https://viromedia.com/viroreact
 
+위의 장점들이 있지만, `expo` 의 단점으로는 앱 설정에 관해 많은 것을 할 수 없다는 점이다.
+
+`expo` 를 이용하면 근본적인 파일들에는 접근할 수 없고, js 파일만 접근이 가능하다.
+
+`app.json` 을 통해서 충분히 많은 설정들을 할 수 있다.
+
+하지만 `infrastructure(기초적인 파일)` 에 접근할 수 없기 때문에 `Expo SDK` 에 포함되어 있지 않은 라이브러리 등을 사용할 때 기본적인 셋업조차 따라가지 못할 수도 있다.
+
+아주 가끔은 프로젝트 진행 중 `expo infrastructure` 에서 지원하지 않는 걸 설치할 필요가 있을 수 있다. 이럴 때는 `expo` 로 작업을 하면 안된다.
+
+또한 `expo` 는 기본적으로 무겁다. 아무리 간단한 코드라도 모든 환경에서 구동되도록 하기 때문이다. 용량을 줄이고 싶어도, `expo` 에서 `build` 를 하고 관리하기 때문에 관여할 수 없다.
+
+이러한 상황에서는 react-native 를 설치해서 사용하면 된다.
+
+```js
+npx create-react-native-app
+```
+
+몇가지 설정을 해주면 `infrastructure` 에 접근할 수 있고, `expo sdk` 에도 접근이 가능하다.
+
 <br>
